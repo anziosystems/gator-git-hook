@@ -1,0 +1,128 @@
+SELECT * FROM c WHERE c.pull_request.user.login = 'Ronchristian'&page=0
+SELECT * FROM c WHERE c.repository["name"] = "ngx-forms"&page=0
+SELECT * FROM c WHERE c.sender.login = 'artemnih'&page=0
+SELECT * FROM c WHERE c.pull_request.created_at >=  '2019-03-01' and  c.pull_request.created_at <= '2019-03-05'&page=0
+SELECT value count(1) FROM c&page=0
+SELECT value count(1) FROM c where c.pull_request.created_at >=  '2019-03-01' and  c.pull_request.created_at <= '2019-03-06'&page=0
+SELECT distinct c.pull_request.user.login FROM c &page=0
+SELECT value count(1) FROM c where c.pull_request.created_at >=  '2019-03-01' and  c.pull_request.created_at <= '2019-03-06' and c.pull_request.user.login = 'Ronchristian'&page=0
+SELECT distinct c.pull_request.user.login FROM c order by c.pull_request.created_at desc &page=1&pagesize=100
+SELECT distinct c.repository.name FROM c  
+
+Index
+{
+    "indexingMode": "consistent",
+    "automatic": true,
+    "includedPaths": [
+        {
+            "path": "/",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        },
+        {
+            "path": "/sender/login/?",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        },
+        {
+            "path": "/repository/name/?",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        },
+        {
+            "path": "/pull_request/created_at/?",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        },
+        {
+            "path": "/pull_request/updated_at/?",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        },
+        {
+            "path": "/pull_request/user/type/?",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        },
+        {
+            "path": "/action/?",
+            "indexes": [
+                {
+                    "kind": "Range",
+                    "dataType": "String",
+                    "precision": -1
+                },
+                {
+                    "kind": "Range",
+                    "dataType": "Number",
+                    "precision": -1
+                }
+            ]
+        }
+    ],
+    "excludedPaths": [
+        {
+            "path": "/\"_etag\"/?"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+bin/
+dist/HttpTrigger/dbConfig.js
+dist/Lib/dynamoConfig.json
+dist/Lib/dbConfig.js
+dist/Lib/sqlConfig.js
+documentation/
+Lib/sqlConfig.ts
+node_modules/
+obj/
+dist/
