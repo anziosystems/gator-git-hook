@@ -22,8 +22,9 @@ class ServiceWorker {
       if (action === 'labeled' || action === 'synchronize') {
         context.res = {
           status: 200,
-          body: 'Forbidden',
+          body: 'Forbidden from hook',
         };
+        console.log (context.res) ;
         return context;
       }
 

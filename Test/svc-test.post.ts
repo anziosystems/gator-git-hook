@@ -11,66 +11,10 @@ import {doesNotReject} from 'assert';
 import {Observable, of, Subject} from 'rxjs';
 import * as jsonBadData from './Sample.data.json';
 import {SQLRepository} from '../Lib/sqlRepository';
-import * as jsonGoodData from './dataFlawed.json';
+import * as jsonGoodData from './Sample.data.json';
 /* const word = (<any>jsonBadData).name; */
 
-describe('GitLogin', () => {
-  it('should return rowsAffected', async () => {
-    let serviceWorker = new ServiceWorker();
 
-    let context: any = {
-      body: '',
-      res: {
-        status: 0,
-        body: '',
-      },
-    };
-
-    let req: any = {
-      body: jsonGoodData,
-      method: 'POST',
-      query: {
-        q: '',
-        page: 1,
-        pagesize: 1,
-      },
-    };
-
-    let sqlRepositoy = new SQLRepository(req);
-    await sqlRepositoy.saveGitLogin().then(result => {
-      expect(result).to.eq(1);
-    });
-  });
-});
-
-// describe('Testing SQLRepository post - Raw', () => {
-//   it('should return rowsAffected', async () => {
-//     let serviceWorker = new ServiceWorker();
-
-//     let context: any = {
-//       body: '',
-//       res: {
-//         status: 0,
-//         body: '',
-//       },
-//     };
-
-//     let req: any = {
-//       body: jsonGoodData,
-//       method: 'POST',
-//       query: {
-//         q: '',
-//         page: 1,
-//         pagesize: 1,
-//       },
-//     };
-
-//     let sqlRepositoy = new SQLRepository(req);
-//     await sqlRepositoy.savePullRequestRaw().then(result => {
-//       expect(result).to.eq(1);
-//     });
-//   });
-// });
 
 describe('Insert PullRequestDetails - GoodData', () => {
   it('should return rowsAffected', async () => {
@@ -131,7 +75,7 @@ describe('Insert PullRequestDetails - BadData', () => {
 });
 
 describe('Testing Post serviceWorker', () => {
-  it('should return 200 with body saying ok', async () => {
+  it.only('should return 200 with body saying ok', async () => {
     let serviceWorker = new ServiceWorker();
 
     let context: any = {
@@ -153,8 +97,8 @@ describe('Testing Post serviceWorker', () => {
     };
 
     await serviceWorker.Process(context, req).then(data => {
-      expect(data.res.body.a).to.eq(1);
-      expect(data.res.body.b).to.eq(1);
+      expect(data.res.body.first.rowsAffected.length).to.eq(1);
+    //  expect(data.res.body.b).to.eq(1);
     });
   });
 });
