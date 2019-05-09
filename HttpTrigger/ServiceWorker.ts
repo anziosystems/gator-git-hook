@@ -19,10 +19,12 @@ class ServiceWorker {
 
     try {
       const action = _.get(req.body, 'action');
-      if (action === 'labeled' || action === 'synchronize') {
+      if (action === 'opened' || action === 'closed' || action === 'edited') {
+         //do nothing
+      } else {
         context.res = {
           status: 200,
-          body: 'Forbidden from hook',
+          body: 'Gator does not care',
         };
         console.log (context.res) ;
         return context;

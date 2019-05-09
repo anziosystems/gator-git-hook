@@ -86,7 +86,7 @@ class SQLRepository {
       pr.Url = _.get(obj.body, 'pull_request.url');
       pr.Login = _.get(obj.body, 'pull_request.user.login');
       pr.Title = _.get(obj.body, 'pull_request.title');
-      pr.State = _.get(obj.body, 'pull_request.state');
+      pr.State = _.get(obj.body, 'pull_request.action');
       pr.Avatar_Url = _.get(obj.body, 'pull_request.user.avatar_url');
       pr.User_Url = _.get(obj.body, 'pull_request.user.url');
       pr.Created_At = _.get(obj.body, 'pull_request.created_at');
