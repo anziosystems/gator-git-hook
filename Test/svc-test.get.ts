@@ -12,18 +12,6 @@ import * as jsonBadData from './Sample.data.json';
 import {SQLRepository} from '../Lib/sqlRepository';
 import * as jsonGoodData from './dataFlawed.json';
 /* const word = (<any>jsonBadData).name; */
-
-describe('Testing Get directly on SQLRepository', () => {
-  it('should resturn number greater than zero', async () => {
-    let serviceWorker = new ServiceWorker();
-    const sqlRepository = new SQLRepository(null);
-    let PageSize = 10;
-    sqlRepository.getItem('select * from PullRequestDetails', 1, PageSize).then((result: any) => {
-      expect(result.length).to.greaterThan(0);
-    });
-  });
-});
-
 describe('Testing Get from serviceWorker', () => {
   it('should resturn number greater than zero', async () => {
     let serviceWorker = new ServiceWorker();
@@ -65,7 +53,7 @@ describe('Test sqlRepository', () => {
       },
     };
 
-    const result = new SQLRepository(req);
+    const result = new SQLRepository();
     expect(result).to.instanceOf(SQLRepository, 'SQLRepository worked!');
   });
 });

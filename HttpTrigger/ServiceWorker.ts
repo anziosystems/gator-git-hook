@@ -20,7 +20,7 @@ class ServiceWorker {
     try {
       const action = _.get(req.body, 'action');
       if (action === 'opened' || action === 'closed' || action === 'edited') {
-         //do nothing
+         //do nothing - means save this PR in SQL
       } else {
         context.res = {
           status: 200,
@@ -31,38 +31,11 @@ class ServiceWorker {
       }
 
       if (!sqlRepository) {
-        sqlRepository = new SQLRepository(req);
+        sqlRepository = new SQLRepository();
       }
 
       const url = _.get(req.body, 'pull_request.url');
       const obj = _.set(req.body, 'pullid', url);
-
-      if (!req.query.pagesize) {
-        req.query.pagesize = '10';
-      }
-      if (!req.query.page) {
-        req.query.page = '1';
-      }
-
-      if (req.query.pagesize === '0') {
-        req.query.pagesize = '10';
-      }
-
-      if (req.query.page === '0') {
-        req.query.page = '1';
-      }
-
-      if (req.method === 'GET') {
-        if (req.query.q.toLowerCase().indexOf('delete') === -1) {
-          return await this.getItem(context, decodeURI(req.query.q), parseInt(req.query.page), parseInt(req.query.pagesize));
-        } else {
-          context.res = {
-            status: 400,
-            body: 'He he he ',
-          };
-          console.log(context);
-        }
-      }
 
       if (req.method === 'POST') {
         return await this.setItem(context, req, obj);
@@ -74,9 +47,9 @@ class ServiceWorker {
 
   private async setItem(context: Context, req: HttpRequest, obj: any) {
     if (!sqlRepository) {
-      sqlRepository = new SQLRepository(req);
+      sqlRepository = new SQLRepository();
     }
-    let result = await sqlRepository.setItem();
+    let result = await sqlRepository.setItem(req);
     context.res = {
       status: 200,
       body: result,
@@ -84,17 +57,6 @@ class ServiceWorker {
     return context;
   }
 
-  private async getItem(context: Context, query: string, page: number, pageSize: number) {
-    if (sqlRepository === undefined) {
-      sqlRepository = new SQLRepository(null);
-    }
-    let result = await sqlRepository.getItem(query, page, pageSize);
-    context.res = {
-      status: 200,
-      body: result.toString(),
-    };
-    return result;
-  }
 }
 
 export {ServiceWorker};

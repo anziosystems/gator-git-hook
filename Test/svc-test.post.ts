@@ -38,8 +38,8 @@ describe('Insert PullRequestDetails - GoodData', () => {
       },
     };
 
-    let sqlRepositoy = new SQLRepository(req);
-    await sqlRepositoy.savePullRequestDetail().then(result => {
+    let sqlRepositoy = new SQLRepository();
+    await sqlRepositoy.savePullRequestDetail(req).then(result => {
       expect(result).to.eq(1);
     });
   });
