@@ -87,13 +87,13 @@ class SQLRepository {
         pr.Id = _.get(obj.body, 'repository.node_id');
         pr.Org = _.get(obj.body, 'repository.owner.login');
         pr.Repo = _.get(obj.body, 'repository.name');
-        pr.Url = _.get(obj.body, 'commits[0].url');
-        pr.Login = _.get(obj.body, 'commits[0].author.username');
-        pr.Title = _.get(obj.body, 'commits[0].message');
+        pr.Url = _.get(obj.body, 'head_commit.url');
+        pr.Login = _.get(obj.body, 'head_commit.author.username');
+        pr.Title = _.get(obj.body, 'head_commit.message');
         pr.State =  action;  
         pr.Avatar_Url = _.get(obj.body, 'sender.avatar_url');
         pr.User_Url = _.get(obj.body, 'sender.url');
-        pr.Created_At = _.get(obj.body, 'commits[0].timestamp');
+        pr.Created_At = _.get(obj.body, 'head_commit.timestamp');
         pr.Body = " ";
       } else {
         pr.Id = _.get(obj.body, 'pull_request.node_id');

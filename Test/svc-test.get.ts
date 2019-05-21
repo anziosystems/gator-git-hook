@@ -11,35 +11,36 @@ import {Observable, of, Subject} from 'rxjs';
 import * as jsonBadData from './Sample.data.json';
 import {SQLRepository} from '../Lib/sqlRepository';
 import * as jsonGoodData from './dataFlawed.json';
-/* const word = (<any>jsonBadData).name; */
-describe('Testing Get from serviceWorker', () => {
-  it('should resturn number greater than zero', async () => {
-    let serviceWorker = new ServiceWorker();
+ const word = (<any>jsonBadData).name; 
+ 
+// describe('Testing Get from serviceWorker', () => {
+//   it('should resturn number greater than zero', async () => {
+//     let serviceWorker = new ServiceWorker();
 
-    let PageSize = 10;
-    let req: any = {
-      body: jsonGoodData,
-      method: 'GET',
-      query: {
-        q: 'select * from PullRequestDetails',
-        page: 1,
-        pagesize: 10,
-      },
-    };
+//     let PageSize = 10;
+//     let req: any = {
+//       body: jsonGoodData,
+//       method: 'GET',
+//       query: {
+//         q: 'select * from PullRequestDetails',
+//         page: 1,
+//         pagesize: 10,
+//       },
+//     };
 
-    let context: any = {
-      body: '',
-      res: {
-        status: 0,
-        body: '',
-      },
-    };
+//     let context: any = {
+//       body: '',
+//       res: {
+//         status: 0,
+//         body: '',
+//       },
+//     };
 
-    serviceWorker.Process(context, req).then((result: any) => {
-      expect(result.length).to.greaterThan(0);
-    });
-  });
-});
+//     serviceWorker.Process(context, req).then((result: any) => {
+//       expect(result.length).to.greaterThan(0);
+//     });
+//   });
+// });
 
 describe('Test sqlRepository', () => {
   it('should resturn sqlRepository', () => {

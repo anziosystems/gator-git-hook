@@ -30,11 +30,12 @@ class ServiceWorker {
           console.log (context.res) ;
           return context;
          }
+         action = 'commit'
       } 
 
       action = action.toLowerCase();
       if (action === 'opened' || action === 'closed' || 
-          action === 'open' || action === 'clos' || action === 'edited') {
+          action === 'open' || action === 'clos' || action === 'edited' || action === 'commit') {
          //do nothing - means save this PR in SQL
       } else {
         context.res = {

@@ -16,8 +16,8 @@ import * as commitData from './commit.data.json';
 /* const word = (<any>jsonBadData).name; */
 
 
-describe('Insert a Commit - GoodData', () => {
-  it.only('should return rowsAffected', async () => {
+describe('Insert a Commit - Direct SQL', () => {
+  it('should return rowsAffected', async () => {
     let serviceWorker = new ServiceWorker();
 
     let req: any = {
@@ -37,9 +37,34 @@ describe('Insert a Commit - GoodData', () => {
   });
 });
 
+describe('Insert a Commit - Process', () => {
+  it('should return rowsAffected', async () => {
+    let serviceWorker = new ServiceWorker();
 
+    let context: any = {
+      body: '',
+      res: {
+        status: 0,
+        body: '',
+      },
+    };
 
-describe('Insert PullRequestDetails - GoodData', () => {
+    let req: any = {
+      body: commitData,
+      method: 'POST',
+      query: {
+        q: '',
+        page: 1,
+        pagesize: 1,
+      },
+    };
+
+    const result = await serviceWorker.Process(context, req);
+    expect(result.res.status).to.eq(200);
+  });
+});
+
+describe('Insert PullRequestDetails - GoodData - SQL Repository', () => {
   it('should return rowsAffected', async () => {
     let serviceWorker = new ServiceWorker();
     let req: any = {
@@ -84,12 +109,12 @@ describe('Insert PullRequestDetails - BadData', () => {
 
     const result = await serviceWorker.Process(context, req);
     expect(result.res.status).to.eq(200);
-    expect(result.res.body).to.eq('Forbidden');
+   
   });
 });
 
 describe('Testing Post serviceWorker', () => {
-  it.only('should return 200 with body saying ok', async () => {
+  it('should return 200 with body saying ok', async () => {
     let serviceWorker = new ServiceWorker();
 
     let context: any = {
