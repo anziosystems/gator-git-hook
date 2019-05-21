@@ -18,8 +18,23 @@ class ServiceWorker {
     // }
 
     try {
-      const action = _.get(req.body, 'action');
-      if (action === 'opened' || action === 'closed' || action === 'edited') {
+      let action: string = _.get(req.body, 'action');
+      if (!action) { //if no action
+        //This may be a commit push
+         let commit = _.get(req.body, 'commits');
+         if (!commit) {
+          context.res = {
+            status: 200,
+            body: 'Gator does not care',
+          };
+          console.log (context.res) ;
+          return context;
+         }
+      } 
+
+      action = action.toLowerCase();
+      if (action === 'opened' || action === 'closed' || 
+          action === 'open' || action === 'clos' || action === 'edited') {
          //do nothing - means save this PR in SQL
       } else {
         context.res = {

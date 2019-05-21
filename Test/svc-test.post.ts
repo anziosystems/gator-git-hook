@@ -12,22 +12,36 @@ import {Observable, of, Subject} from 'rxjs';
 import * as jsonBadData from './Sample.data.json';
 import {SQLRepository} from '../Lib/sqlRepository';
 import * as jsonGoodData from './Sample.data.json';
+import * as commitData from './commit.data.json';
 /* const word = (<any>jsonBadData).name; */
+
+
+describe('Insert a Commit - GoodData', () => {
+  it.only('should return rowsAffected', async () => {
+    let serviceWorker = new ServiceWorker();
+
+    let req: any = {
+      body: commitData,
+      method: 'POST',
+      query: {
+        q: '',
+        page: 1,
+        pagesize: 1,
+      },
+    };
+
+    let sqlRepositoy = new SQLRepository();
+    await sqlRepositoy.savePullRequestDetail(req).then(result => {
+      expect(result.rowsAffected.length).to.eq(1);
+    });
+  });
+});
 
 
 
 describe('Insert PullRequestDetails - GoodData', () => {
   it('should return rowsAffected', async () => {
     let serviceWorker = new ServiceWorker();
-
-    let context: any = {
-      body: '',
-      res: {
-        status: 0,
-        body: '',
-      },
-    };
-
     let req: any = {
       body: jsonGoodData,
       method: 'POST',
@@ -40,7 +54,7 @@ describe('Insert PullRequestDetails - GoodData', () => {
 
     let sqlRepositoy = new SQLRepository();
     await sqlRepositoy.savePullRequestDetail(req).then(result => {
-      expect(result).to.eq(1);
+      expect(result.rowsAffected.length).to.eq(1);
     });
   });
 });
