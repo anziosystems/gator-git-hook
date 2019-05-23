@@ -19,30 +19,31 @@ class ServiceWorker {
 
     try {
       let action: string = _.get(req.body, 'action');
-      if (!action) { //if no action
-        //This may be a commit push
-         let commit = _.get(req.body, 'commits');
-         if (!commit) {
+
+      if (action === undefined) {
+        //if no action
+
+        action = _.get(req.body, 'commits');
+        if (action === undefined) {
           context.res = {
             status: 200,
-            body: 'Gator does not care',
+            body: 'Gator does not care - commit',
           };
-          console.log (context.res) ;
+          console.log(context.res);
           return context;
-         }
-         action = 'commit'
-      } 
+        }
+        action = 'commit';
+      }
 
       action = action.toLowerCase();
-      if (action === 'opened' || action === 'closed' || 
-          action === 'open' || action === 'clos' || action === 'edited' || action === 'commit') {
-         //do nothing - means save this PR in SQL
+      if (action === 'opened' || action === 'closed' || action === 'open' || action === 'close' || action === 'edited' || action === 'commit') {
+        //do nothing - means save this PR in SQL
       } else {
         context.res = {
           status: 200,
-          body: 'Gator does not care',
+          body: 'Gator does not care. Action: ' + action,
         };
-        console.log (context.res) ;
+        console.log(context.res);
         return context;
       }
 
@@ -62,17 +63,25 @@ class ServiceWorker {
   }
 
   private async setItem(context: Context, req: HttpRequest, obj: any) {
-    if (!sqlRepository) {
-      sqlRepository = new SQLRepository();
+    try {
+      if (!sqlRepository) {
+        sqlRepository = new SQLRepository();
+      }
+      let result = await sqlRepository.setItem(req);
+      context.res = {
+        status: 200,
+        body: result,
+      };
+      return context;
+    } catch (ex) {
+      context.res = {
+        status: 200,
+        body: ex,
+      };
+      return context;
     }
-    let result = await sqlRepository.setItem(req);
-    context.res = {
-      status: 200,
-      body: result,
-    };
     return context;
   }
-
 }
 
 export {ServiceWorker};

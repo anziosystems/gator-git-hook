@@ -53,22 +53,24 @@ class SQLRepository {
       request.input('Url', sql.VarChar(1000), pr.Url);
       request.input('State', sql.VarChar(50), pr.State);
       request.input('Title', sql.VarChar(5000), pr.Title);
-      request.input('Created_At', sql.VarChar(20), pr.Created_At.substr(0,19));
+      request.input('Created_At', sql.VarChar(20), pr.Created_At.substr(0, 19));
       request.input('Body', sql.VarChar(2000), pr.Body);
       request.input('Login', sql.VarChar(100), pr.Login);
       request.input('Avatar_Url', sql.VarChar(2000), pr.Avatar_Url);
       request.input('User_Url', sql.VarChar(2000), pr.User_Url);
-      try {
-        let x = await request.execute('SavePR4Repo');
-        return x;
-      } catch (ex) {
-        console.log(ex);
+      let x = await request.execute('SavePR4Repo');
+      if (x) {
+        if (x.rowsAffected) {
+          return 'rows Affected' + x.rowsAffected[0];
+        }
       }
+      return 'None';
     } catch (err) {
       if (err.number === 2601) {
         console.log('savePullRequestDetail: ' + err); //Duplicate Record
+      } else {
+        throw err;
       }
-      console.log(err);
     }
   }
 
@@ -82,47 +84,37 @@ class SQLRepository {
       action = 'commit';
     }
     action = action.toLowerCase();
-    try {
-      if (action === 'commit') {
-        pr.Id = _.get(obj.body, 'repository.node_id');
-        pr.Org = _.get(obj.body, 'repository.owner.login');
-        pr.Repo = _.get(obj.body, 'repository.name');
-        pr.Url = _.get(obj.body, 'head_commit.url');
-        pr.Login = _.get(obj.body, 'head_commit.author.username');
-        pr.Title = _.get(obj.body, 'head_commit.message');
-        pr.State =  action;  
-        pr.Avatar_Url = _.get(obj.body, 'sender.avatar_url');
-        pr.User_Url = _.get(obj.body, 'sender.url');
-        pr.Created_At = _.get(obj.body, 'head_commit.timestamp');
-        pr.Body = " ";
-      } else {
-        pr.Id = _.get(obj.body, 'pull_request.node_id');
-        pr.Org = _.get(obj.body, 'pull_request.base.repo.owner.login');
-        pr.Repo = _.get(obj.body, 'pull_request.base.repo.name');
-        pr.Url = _.get(obj.body, 'pull_request.url');
-        pr.Login = _.get(obj.body, 'pull_request.user.login');
-        pr.Title = _.get(obj.body, 'pull_request.title');
-        pr.State =  action;  
-        pr.Avatar_Url = _.get(obj.body, 'pull_request.user.avatar_url');
-        pr.User_Url = _.get(obj.body, 'pull_request.user.url');
-        pr.Created_At = _.get(obj.body, 'pull_request.created_at');
-        pr.Body = _.get(obj.body, 'pull_request.body');
-      }
-     
-    } catch (err) {
-      console.log(err);
-    }
 
+    if (action === 'commit') {
+      pr.Id = _.get(obj.body, 'repository.node_id');
+      pr.Org = _.get(obj.body, 'repository.owner.login');
+      pr.Repo = _.get(obj.body, 'repository.name');
+      pr.Url = _.get(obj.body, 'head_commit.url');
+      pr.Login = _.get(obj.body, 'head_commit.author.username');
+      pr.Title = _.get(obj.body, 'head_commit.message');
+      pr.State = action;
+      pr.Avatar_Url = _.get(obj.body, 'sender.avatar_url');
+      pr.User_Url = _.get(obj.body, 'sender.url');
+      pr.Created_At = _.get(obj.body, 'head_commit.timestamp');
+      pr.Body = ' ';
+    } else {
+      pr.Id = _.get(obj.body, 'pull_request.node_id');
+      pr.Org = _.get(obj.body, 'pull_request.base.repo.owner.login');
+      pr.Repo = _.get(obj.body, 'pull_request.base.repo.name');
+      pr.Url = _.get(obj.body, 'pull_request.url');
+      pr.Login = _.get(obj.body, 'pull_request.user.login');
+      pr.Title = _.get(obj.body, 'pull_request.title');
+      pr.State = action;
+      pr.Avatar_Url = _.get(obj.body, 'pull_request.user.avatar_url');
+      pr.User_Url = _.get(obj.body, 'pull_request.user.url');
+      pr.Created_At = _.get(obj.body, 'pull_request.created_at');
+      pr.Body = _.get(obj.body, 'pull_request.body');
+    }
     return pr;
   }
 
   async setItem(obj: any) {
-    try {
-      const first = await this.savePullRequestDetail(obj);
-      return {first};
-    } catch (err) {
-      console.log(err);
-    }
+    const first = await this.savePullRequestDetail(obj);
   }
 }
 

@@ -1,9 +1,6 @@
 // tslint:disable:no-any
 // tslint:disable:no-invalid-this
 
-
-import {Context as FunctionContext} from '@azure/functions';
-import {HttpRequest} from '@azure/functions';
 import {ServiceWorker} from '../HttpTrigger/ServiceWorker';
 import {expect} from 'chai';
 import {Context as MochaContext} from 'mocha';
@@ -11,10 +8,9 @@ import {doesNotReject} from 'assert';
 import {Observable, of, Subject} from 'rxjs';
 import * as jsonBadData from './Sample.data.json';
 import {SQLRepository} from '../Lib/sqlRepository';
-import * as jsonGoodData from './Sample.data.json';
+import * as jsonGoodData from './action-opened.json';
 import * as commitData from './commit.data.json';
 /* const word = (<any>jsonBadData).name; */
-
 
 describe('Insert a Commit - Direct SQL', () => {
   it('should return rowsAffected', async () => {
@@ -109,7 +105,6 @@ describe('Insert PullRequestDetails - BadData', () => {
 
     const result = await serviceWorker.Process(context, req);
     expect(result.res.status).to.eq(200);
-   
   });
 });
 
@@ -136,8 +131,8 @@ describe('Testing Post serviceWorker', () => {
     };
 
     await serviceWorker.Process(context, req).then(data => {
-      expect(data.res.body.first.rowsAffected.length).to.eq(1);
-    //  expect(data.res.body.b).to.eq(1);
+      expect(data.res.body.status).to.eq(200);
+      //  expect(data.res.body.b).to.eq(1);
     });
   });
 });

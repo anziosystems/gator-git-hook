@@ -11,8 +11,8 @@ import {Observable, of, Subject} from 'rxjs';
 import * as jsonBadData from './Sample.data.json';
 import {SQLRepository} from '../Lib/sqlRepository';
 import * as jsonGoodData from './dataFlawed.json';
- const word = (<any>jsonBadData).name; 
- 
+const word = (<any>jsonBadData).name;
+
 // describe('Testing Get from serviceWorker', () => {
 //   it('should resturn number greater than zero', async () => {
 //     let serviceWorker = new ServiceWorker();
