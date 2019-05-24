@@ -34,7 +34,7 @@ describe('Insert a Commit - Direct SQL', () => {
 });
 
 describe('Insert a Commit - Process', () => {
-  it('should return rowsAffected', async () => {
+  it.only('should return rowsAffected', async () => {
     let serviceWorker = new ServiceWorker();
 
     let context: any = {

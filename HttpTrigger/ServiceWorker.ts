@@ -2,6 +2,7 @@ import {Context, HttpRequest} from '@azure/functions';
 import {SQLRepository} from '../Lib/sqlRepository';
 import * as _ from 'lodash';
 
+
 let sqlRepository: SQLRepository;
 class ServiceWorker {
   constructor() {}
@@ -18,19 +19,47 @@ class ServiceWorker {
     // }
 
     try {
+        if (_.isNil(req.body)){
+        context.res = {
+          status: 406, 
+          body: 'request does not have a body',
+        };
+        console.log(context.res);
+        return context;
+      }
+
+      
       let action: string = _.get(req.body, 'action');
-
-      if (action === undefined) {
+      
+      if (action == undefined) {
         //if no action
-
-        action = _.get(req.body, 'commits');
-        if (action === undefined) {
+        let action2: any = _.get(req.body, 'commits');
+        if ( action2 == undefined) {
+          //not acceptable 
           context.res = {
-            status: 200,
-            body: 'Gator does not care - commit',
+            status: 406, 
+            body: 'No Commit node found!' ,
           };
           console.log(context.res);
           return context;
+        } else {
+          let login: string = _.get(req.body, 'head_commit.author.username');
+          if (login == undefined) {
+            context.res = {
+              status: 406, 
+              body: 'No login defined.',
+            };
+            console.log(context.res);
+            return context;
+          }
+          if (login.startsWith('greenkeeper', 0) || login.indexOf('[bot]', 0) === -1){
+            context.res = {
+              status: 406, 
+              body: 'greenkeeper and bots are not intresting',
+            };
+            console.log(context.res);
+            return context;
+          }
         }
         action = 'commit';
       }
@@ -40,7 +69,7 @@ class ServiceWorker {
         //do nothing - means save this PR in SQL
       } else {
         context.res = {
-          status: 200,
+          status: 406,
           body: 'Gator does not care. Action: ' + action,
         };
         console.log(context.res);
@@ -75,7 +104,7 @@ class ServiceWorker {
       return context;
     } catch (ex) {
       context.res = {
-        status: 200,
+        status: 400,
         body: ex,
       };
       return context;
