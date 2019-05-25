@@ -77,44 +77,45 @@ class SQLRepository {
   private shredObject(obj: any): PullRequest {
     let pr: PullRequest = new PullRequest();
 
-    let action: string = _.get(obj.body, 'action');
+    let action: string = _.get(obj, 'action');
     if (!action) {
       //if no action This may be a commit push
-      action = _.get(obj.body, 'commits');
+      action = _.get(obj, 'commits');
       action = 'commit';
     }
     action = action.toLowerCase();
 
     if (action === 'commit') {
-      pr.Id = _.get(obj.body, 'repository.node_id');
-      pr.Org = _.get(obj.body, 'repository.owner.login');
-      pr.Repo = _.get(obj.body, 'repository.name');
-      pr.Url = _.get(obj.body, 'head_commit.url');
-      pr.Login = _.get(obj.body, 'head_commit.author.username');
-      pr.Title = _.get(obj.body, 'head_commit.message');
+      pr.Id = _.get(obj, 'repository.node_id');
+      pr.Org = _.get(obj, 'repository.owner.login');
+      pr.Repo = _.get(obj, 'repository.name');
+      pr.Url = _.get(obj, 'head_commit.url');
+      pr.Login = _.get(obj, 'head_commit.author.username');
+      pr.Title = _.get(obj, 'head_commit.message');
       pr.State = action;
-      pr.Avatar_Url = _.get(obj.body, 'sender.avatar_url');
-      pr.User_Url = _.get(obj.body, 'sender.url');
-      pr.Created_At = _.get(obj.body, 'head_commit.timestamp');
+      pr.Avatar_Url = _.get(obj, 'sender.avatar_url');
+      pr.User_Url = _.get(obj, 'sender.url');
+      pr.Created_At = _.get(obj, 'head_commit.timestamp');
       pr.Body = ' ';
     } else {
-      pr.Id = _.get(obj.body, 'pull_request.node_id');
-      pr.Org = _.get(obj.body, 'pull_request.base.repo.owner.login');
-      pr.Repo = _.get(obj.body, 'pull_request.base.repo.name');
-      pr.Url = _.get(obj.body, 'pull_request.url');
-      pr.Login = _.get(obj.body, 'pull_request.user.login');
-      pr.Title = _.get(obj.body, 'pull_request.title');
+      pr.Id = _.get(obj, 'pull_request.node_id');
+      pr.Org = _.get(obj, 'pull_request.base.repo.owner.login');
+      pr.Repo = _.get(obj, 'pull_request.base.repo.name');
+      pr.Url = _.get(obj, 'pull_request.url');
+      pr.Login = _.get(obj, 'pull_request.user.login');
+      pr.Title = _.get(obj, 'pull_request.title');
       pr.State = action;
-      pr.Avatar_Url = _.get(obj.body, 'pull_request.user.avatar_url');
-      pr.User_Url = _.get(obj.body, 'pull_request.user.url');
-      pr.Created_At = _.get(obj.body, 'pull_request.created_at');
-      pr.Body = _.get(obj.body, 'pull_request.body');
+      pr.Avatar_Url = _.get(obj, 'pull_request.user.avatar_url');
+      pr.User_Url = _.get(obj, 'pull_request.user.url');
+      pr.Created_At = _.get(obj, 'pull_request.created_at');
+      pr.Body = _.get(obj, 'pull_request.body');
     }
     return pr;
   }
 
   async setItem(obj: any) {
-    const first = await this.savePullRequestDetail(obj);
+    const res = await this.savePullRequestDetail(obj);
+    return res ;
   }
 }
 

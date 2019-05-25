@@ -29,11 +29,19 @@ class ServiceWorker {
       }
 
       
-      let action: string = _.get(req.body, 'action');
+      let  payload: any ;
+      if (req.body.substr (0,8) === 'payload=')
+          payload = req.body.substr(8);
+      else 
+          payload = req.body ;
+      
+      payload = JSON.parse(decodeURIComponent(payload));
+     
+      let action: string = _.get(payload, "action");
       
       if (action == undefined) {
         //if no action
-        let action2: any = _.get(req.body, 'commits');
+        let action2: any = _.get(payload, "commits");
         if ( action2 == undefined) {
           //not acceptable 
           context.res = {
@@ -43,7 +51,12 @@ class ServiceWorker {
           console.log(context.res);
           return context;
         } else {
-          let login: string = _.get(req.body, 'head_commit.author.username');
+          let login: string = _.get(payload, 'head_commit.author.username');
+
+          if (login == undefined) {
+            login = _.get(payload, 'head_commit.author.name');
+          }
+          
           if (login == undefined) {
             context.res = {
               status: 406, 
@@ -52,10 +65,10 @@ class ServiceWorker {
             console.log(context.res);
             return context;
           }
-          if (login.startsWith('greenkeeper', 0) || login.indexOf('[bot]', 0) === -1){
+          if (login.startsWith('greenkeeper', 0) || login.startsWith('semantic-release-bot', 0)){
             context.res = {
               status: 406, 
-              body: 'greenkeeper and bots are not intresting',
+              body: 'greenkeeper, semantic-release-bot and bots are not intresting',
             };
             console.log(context.res);
             return context;
@@ -80,23 +93,22 @@ class ServiceWorker {
         sqlRepository = new SQLRepository();
       }
 
-      const url = _.get(req.body, 'pull_request.url');
-      const obj = _.set(req.body, 'pullid', url);
-
+      const url = _.get(payload, 'pull_request.url');
+     
       if (req.method === 'POST') {
-        return await this.setItem(context, req, obj);
+        return await this.setItem(context, payload);
       }
     } catch (err) {
       return err;
     }
   }
 
-  private async setItem(context: Context, req: HttpRequest, obj: any) {
+  private async setItem(context: Context, payload: any) {
     try {
       if (!sqlRepository) {
         sqlRepository = new SQLRepository();
       }
-      let result = await sqlRepository.setItem(req);
+      let result = await sqlRepository.setItem(payload);
       context.res = {
         status: 200,
         body: result,
