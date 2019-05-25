@@ -2,7 +2,6 @@ import {Context, HttpRequest} from '@azure/functions';
 import {SQLRepository} from '../Lib/sqlRepository';
 import * as _ from 'lodash';
 
-
 let sqlRepository: SQLRepository;
 class ServiceWorker {
   constructor() {}
@@ -19,34 +18,31 @@ class ServiceWorker {
     // }
 
     try {
-        if (_.isNil(req.body)){
+      if (_.isNil(req.body)) {
         context.res = {
-          status: 406, 
+          status: 406,
           body: 'request does not have a body',
         };
         console.log(context.res);
         return context;
       }
 
-      
-      let  payload: any ;
-      if (req.body.substr (0,8) === 'payload=')
-          payload = req.body.substr(8);
-      else 
-          payload = req.body ;
-      
+      let payload: any;
+      if (req.body.substr(0, 8) === 'payload=') payload = req.body.substr(8);
+      else payload = req.body;
+
       payload = JSON.parse(decodeURIComponent(payload));
-     
-      let action: string = _.get(payload, "action");
-      
+
+      let action: string = _.get(payload, 'action');
+
       if (action == undefined) {
         //if no action
-        let action2: any = _.get(payload, "commits");
-        if ( action2 == undefined) {
-          //not acceptable 
+        let action2: any = _.get(payload, 'commits');
+        if (action2 == undefined) {
+          //not acceptable
           context.res = {
-            status: 406, 
-            body: 'No Commit node found!' ,
+            status: 406,
+            body: 'No Commit node found!',
           };
           console.log(context.res);
           return context;
@@ -56,18 +52,18 @@ class ServiceWorker {
           if (login == undefined) {
             login = _.get(payload, 'head_commit.author.name');
           }
-          
+
           if (login == undefined) {
             context.res = {
-              status: 406, 
+              status: 406,
               body: 'No login defined.',
             };
             console.log(context.res);
             return context;
           }
-          if (login.startsWith('greenkeeper', 0) || login.startsWith('semantic-release-bot', 0)){
+          if (login.startsWith('greenkeeper', 0) || login.startsWith('semantic-release-bot', 0)) {
             context.res = {
-              status: 406, 
+              status: 406,
               body: 'greenkeeper, semantic-release-bot and bots are not intresting',
             };
             console.log(context.res);
@@ -93,8 +89,6 @@ class ServiceWorker {
         sqlRepository = new SQLRepository();
       }
 
-      const url = _.get(payload, 'pull_request.url');
-     
       if (req.method === 'POST') {
         return await this.setItem(context, payload);
       }
@@ -108,7 +102,7 @@ class ServiceWorker {
       if (!sqlRepository) {
         sqlRepository = new SQLRepository();
       }
-      let result = await sqlRepository.setItem(payload);
+      const result = await sqlRepository.savePullRequestDetail(payload);
       context.res = {
         status: 200,
         body: result,
@@ -121,7 +115,6 @@ class ServiceWorker {
       };
       return context;
     }
-    return context;
   }
 }
 

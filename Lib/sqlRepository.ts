@@ -87,10 +87,14 @@ class SQLRepository {
 
     if (action === 'commit') {
       pr.Id = _.get(obj, 'repository.node_id');
-      pr.Org = _.get(obj, 'repository.owner.login');
+      pr.Org = _.get(obj, 'repository.owner.login'); //org name comes here
+     
       pr.Repo = _.get(obj, 'repository.name');
       pr.Url = _.get(obj, 'head_commit.url');
       pr.Login = _.get(obj, 'head_commit.author.username');
+      if (pr.Login == undefined) {
+        pr.Login = _.get(obj, 'head_commit.author.name');
+      }
       pr.Title = _.get(obj, 'head_commit.message');
       pr.State = action;
       pr.Avatar_Url = _.get(obj, 'sender.avatar_url');
@@ -112,11 +116,7 @@ class SQLRepository {
     }
     return pr;
   }
-
-  async setItem(obj: any) {
-    const res = await this.savePullRequestDetail(obj);
-    return res ;
-  }
+ 
 }
 
 export {SQLRepository};
