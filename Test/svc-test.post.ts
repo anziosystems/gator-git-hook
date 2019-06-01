@@ -27,18 +27,38 @@ describe('Insert a Commit - Direct SQL', () => {
     };
 
     let sqlRepositoy = new SQLRepository();
-    await sqlRepositoy.savePullRequestDetail(req).then(result => {
-      expect(result.rowsAffected.length).to.eq(1);
+    await sqlRepositoy.savePullRequestDetail(req.body).then(result => {
+      expect(result).to.contains('rows');
+    });
+  });
+});
+
+describe('Insert PullRequestDetails - GoodData - DirSQL Repository', () => {
+  it('should return rowsAffected', async () => {
+    let serviceWorker = new ServiceWorker();
+    let req: any = {
+      body: jsonGoodData,
+      method: 'POST',
+      query: {
+        q: '',
+        page: 1,
+        pagesize: 1,
+      },
+    };
+
+    let sqlRepositoy = new SQLRepository();
+    await sqlRepositoy.savePullRequestDetail(req.body).then(result => {
+      expect(result).to.contains('rows');
     });
   });
 });
 
 describe('Insert a Commit - Process', () => {
-  it.only('should return rowsAffected', async () => {
+  it('should return rowsAffected', async () => {
     let serviceWorker = new ServiceWorker();
 
     let context: any = {
-      body: '',
+      body: commitData,
       res: {
         status: 0,
         body: '',
@@ -56,37 +76,18 @@ describe('Insert a Commit - Process', () => {
     };
 
     const result = await serviceWorker.Process(context, req);
-    expect(result.res.status).to.eq(200);
+    expect(result.res.status).to.eq(406);
   });
 });
 
-describe('Insert PullRequestDetails - GoodData - SQL Repository', () => {
-  it('should return rowsAffected', async () => {
-    let serviceWorker = new ServiceWorker();
-    let req: any = {
-      body: jsonGoodData,
-      method: 'POST',
-      query: {
-        q: '',
-        page: 1,
-        pagesize: 1,
-      },
-    };
-
-    let sqlRepositoy = new SQLRepository();
-    await sqlRepositoy.savePullRequestDetail(req).then(result => {
-      expect(result.rowsAffected.length).to.eq(1);
-    });
-  });
-});
 
 //Action: synchronize is not accepted
 describe('Insert PullRequestDetails - BadData', () => {
-  it('should return 200 with body saying forbidden', async () => {
+  it.skip('should return 200 with body saying forbidden', async () => {
     let serviceWorker = new ServiceWorker();
 
     let context: any = {
-      body: '',
+      body: jsonBadData,
       res: {
         status: 0,
         body: '',
@@ -131,8 +132,8 @@ describe('Testing Post serviceWorker', () => {
     };
 
     await serviceWorker.Process(context, req).then(data => {
-      expect(data.res.body.status).to.eq(200);
-      //  expect(data.res.body.b).to.eq(1);
+      expect(data.res.status).to.eq(200);
+      
     });
   });
 });

@@ -26,16 +26,23 @@ class ServiceWorker {
         console.log(context.res);
         return context;
       }
-
+      
       let payload: any;
-      if (req.body.substr(0, 8) === 'payload=') payload = req.body.substr(8);
-      else payload = req.body;
-
-      payload = JSON.parse(decodeURIComponent(payload));
+      if (typeof (req.body) === 'object'){
+        payload = req.body;
+        console.log ('==>body is a json object')
+      }  else {
+      //Payload = {} is appended by Git hub  
+        payload = JSON.parse(decodeURIComponent(req.body));
+        if (payload.substr(0, 8) === 'payload=') 
+            payload = JSON.parse (req.body.substr(8));
+        console.log ('==>JSON Parser ran. Payload= is removed');
+      }
 
       let action: string = _.get(payload, 'action');
 
       if (action == undefined) {
+        action = 'commit';
         //if no action
         let action2: any = _.get(payload, 'commits');
         if (action2 == undefined) {
@@ -48,11 +55,9 @@ class ServiceWorker {
           return context;
         } else {
           let login: string = _.get(payload, 'head_commit.author.username');
-
           if (login == undefined) {
             login = _.get(payload, 'head_commit.author.name');
           }
-
           if (login == undefined) {
             context.res = {
               status: 406,
@@ -70,11 +75,12 @@ class ServiceWorker {
             return context;
           }
         }
-        action = 'commit';
+        
       }
 
       action = action.toLowerCase();
-      if (action === 'opened' || action === 'closed' || action === 'open' || action === 'close' || action === 'edited' || action === 'commit') {
+      if (action === 'opened' || action === 'closed' || action === 'open' || 
+          action === 'close' || action === 'edited' || action === 'commit') {
         //do nothing - means save this PR in SQL
       } else {
         context.res = {

@@ -1,6 +1,7 @@
 let sql = require('mssql');
-import {sqlConfigSetting} from './sqlConfig';
 import * as _ from 'lodash';
+const dotenv = require('dotenv');
+dotenv.config();
 
 class PullRequest {
   Id: string;
@@ -8,6 +9,7 @@ class PullRequest {
   Repo: string;
   Url: string;
   State: string;
+  Action: string;
   Title: string;
   Created_At: string;
   Body: string;
@@ -20,14 +22,21 @@ class SQLRepository {
   pr: PullRequest;
   raw: string;
   pool: any;
-
+  sqlConfigSetting: any = {};
+  
   constructor() {
     this.createPool();
   }
 
   async createPool() {
     if (!this.pool) {
-      await new sql.ConnectionPool(sqlConfigSetting).connect().then((pool: any) => {
+      this.sqlConfigSetting.server = process.env.SQL_Server;
+      this.sqlConfigSetting.database = process.env.SQL_Database;
+      this.sqlConfigSetting.user = process.env.SQL_User;
+      this.sqlConfigSetting.password = process.env.SQL_Password;
+      this.sqlConfigSetting.port = 1433;
+      this.sqlConfigSetting.encrypt = true;
+      await new sql.ConnectionPool(this.sqlConfigSetting).connect().then((pool: any) => {
         this.pool = pool;
       });
     }
@@ -48,11 +57,12 @@ class SQLRepository {
       }
 
       request.input('Id', sql.VarChar(200), pr.Id);
-      request.input('Org', sql.VarChar(1000), pr.Org);
-      request.input('Repo', sql.VarChar(1000), pr.Repo);
-      request.input('Url', sql.VarChar(1000), pr.Url);
+      request.input('Org', sql.VarChar(200), pr.Org);
+      request.input('Repo', sql.VarChar(200), pr.Repo);
+      request.input('Url', sql.VarChar(2000), pr.Url);
       request.input('State', sql.VarChar(50), pr.State);
-      request.input('Title', sql.VarChar(5000), pr.Title);
+      request.input('Action', sql.VarChar(50), pr.Action);
+      request.input('Title', sql.VarChar(2000), pr.Title);
       request.input('Created_At', sql.VarChar(20), pr.Created_At.substr(0, 19));
       request.input('Body', sql.VarChar(2000), pr.Body);
       request.input('Login', sql.VarChar(100), pr.Login);
@@ -77,6 +87,7 @@ class SQLRepository {
   private shredObject(obj: any): PullRequest {
     let pr: PullRequest = new PullRequest();
 
+    let state: string = _.get(obj, 'pull_request.state');
     let action: string = _.get(obj, 'action');
     if (!action) {
       //if no action This may be a commit push
@@ -84,11 +95,12 @@ class SQLRepository {
       action = 'commit';
     }
     action = action.toLowerCase();
+    if (!state)
+        state = action ;
 
     if (action === 'commit') {
       pr.Id = _.get(obj, 'repository.node_id');
       pr.Org = _.get(obj, 'repository.owner.login'); //org name comes here
-     
       pr.Repo = _.get(obj, 'repository.name');
       pr.Url = _.get(obj, 'head_commit.url');
       pr.Login = _.get(obj, 'head_commit.author.username');
@@ -96,7 +108,8 @@ class SQLRepository {
         pr.Login = _.get(obj, 'head_commit.author.name');
       }
       pr.Title = _.get(obj, 'head_commit.message');
-      pr.State = action;
+      pr.State = state;
+      pr.Action = action;
       pr.Avatar_Url = _.get(obj, 'sender.avatar_url');
       pr.User_Url = _.get(obj, 'sender.url');
       pr.Created_At = _.get(obj, 'head_commit.timestamp');
@@ -108,12 +121,15 @@ class SQLRepository {
       pr.Url = _.get(obj, 'pull_request.url');
       pr.Login = _.get(obj, 'pull_request.user.login');
       pr.Title = _.get(obj, 'pull_request.title');
-      pr.State = action;
+      pr.State = state;
+      pr.Action = action;
       pr.Avatar_Url = _.get(obj, 'pull_request.user.avatar_url');
       pr.User_Url = _.get(obj, 'pull_request.user.url');
       pr.Created_At = _.get(obj, 'pull_request.created_at');
       pr.Body = _.get(obj, 'pull_request.body');
     }
+
+  
     return pr;
   }
  

@@ -8,3 +8,4 @@ Lib/sqlConfig.ts
 node_modules/
 obj/
 dist/
+.env
