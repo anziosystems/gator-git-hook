@@ -17,6 +17,7 @@ class ServiceWorker {
     //         });
     // }
 
+    console.log("==>Git hook is called!")
     try {
       if (_.isNil(req.body)) {
         context.res = {
@@ -26,17 +27,25 @@ class ServiceWorker {
         console.log(context.res);
         return context;
       }
-      
+
       let payload: any;
-      if (typeof (req.body) === 'object'){
+      console.log ('==>req' + req);
+      if (typeof req.body === 'object') {
         payload = req.body;
-        console.log ('==>body is a json object')
-      }  else {
-      //Payload = {} is appended by Git hub  
-        payload = JSON.parse(decodeURIComponent(req.body));
-        if (payload.substr(0, 8) === 'payload=') 
-            payload = JSON.parse (req.body.substr(8));
-        console.log ('==>JSON Parser ran. Payload= is removed');
+        console.log('==>body is a json object');
+      } else {
+        //Payload = {} is appended by Git hub
+        //payload = JSON.parse(decodeURIComponent(req.body));
+        payload = req.body;
+        console.log ('==> payload = req.body: ' + payload)
+         
+        if (payload.substr(0, 8) === 'payload=') {
+          payload = JSON.parse(decodeURIComponent(req.body.substr(8)));
+          console.log ('==>' + payload);
+        }
+
+        console.log('==>JSON Parser ran. Payload= is removed' );
+        console.log('==> Payload ' + payload) ;
       }
 
       let action: string = _.get(payload, 'action');
@@ -75,12 +84,10 @@ class ServiceWorker {
             return context;
           }
         }
-        
       }
 
       action = action.toLowerCase();
-      if (action === 'opened' || action === 'closed' || action === 'open' || 
-          action === 'close' || action === 'edited' || action === 'commit') {
+      if (action === 'opened' || action === 'closed' || action === 'open' || action === 'close' || action === 'edited' || action === 'commit') {
         //do nothing - means save this PR in SQL
       } else {
         context.res = {
@@ -99,7 +106,13 @@ class ServiceWorker {
         return await this.setItem(context, payload);
       }
     } catch (err) {
-      return err;
+      context.res = {
+        status: 407,
+        body: '==> Error: ' + err,
+      };
+      console.log(context.res);
+      return context;
+      
     }
   }
 
@@ -111,7 +124,7 @@ class ServiceWorker {
       const result = await sqlRepository.savePullRequestDetail(payload);
       context.res = {
         status: 200,
-        body: result,
+        body: result + 'Saved',
       };
       return context;
     } catch (ex) {
@@ -125,3 +138,4 @@ class ServiceWorker {
 }
 
 export {ServiceWorker};
+ 

@@ -23,7 +23,7 @@ class SQLRepository {
   raw: string;
   pool: any;
   sqlConfigSetting: any = {};
-  
+
   constructor() {
     this.createPool();
   }
@@ -71,9 +71,11 @@ class SQLRepository {
       let x = await request.execute('SavePR4Repo');
       if (x) {
         if (x.rowsAffected) {
+          console.log ('saved id:' + pr.Id)
           return 'rows Affected' + x.rowsAffected[0];
         }
       }
+      console.log ('Not saved id: ' + pr.Id);
       return 'None';
     } catch (err) {
       if (err.number === 2601) {
@@ -95,8 +97,7 @@ class SQLRepository {
       action = 'commit';
     }
     action = action.toLowerCase();
-    if (!state)
-        state = action ;
+    if (!state) state = action;
 
     if (action === 'commit') {
       pr.Id = _.get(obj, 'repository.node_id');
@@ -129,10 +130,8 @@ class SQLRepository {
       pr.Body = _.get(obj, 'pull_request.body');
     }
 
-  
     return pr;
   }
- 
 }
 
 export {SQLRepository};

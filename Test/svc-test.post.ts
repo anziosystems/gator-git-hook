@@ -80,7 +80,6 @@ describe('Insert a Commit - Process', () => {
   });
 });
 
-
 //Action: synchronize is not accepted
 describe('Insert PullRequestDetails - BadData', () => {
   it.skip('should return 200 with body saying forbidden', async () => {
@@ -133,7 +132,6 @@ describe('Testing Post serviceWorker', () => {
 
     await serviceWorker.Process(context, req).then(data => {
       expect(data.res.status).to.eq(200);
-      
     });
   });
 });
