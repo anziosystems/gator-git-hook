@@ -100,7 +100,7 @@ class SQLRepository {
     if (!state) state = action;
 
     if (action === 'commit') {
-      pr.Id = _.get(obj, 'repository.node_id');
+      pr.Id = _.get(obj, 'head_commit.id');
       pr.Org = _.get(obj, 'repository.owner.login'); //org name comes here
       pr.Repo = _.get(obj, 'repository.name');
       pr.Url = _.get(obj, 'head_commit.url');
