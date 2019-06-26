@@ -104,10 +104,10 @@ class SQLRepository {
       pr.Org = _.get(obj, 'repository.owner.login'); //org name comes here
       pr.Repo = _.get(obj, 'repository.name');
       pr.Url = _.get(obj, 'head_commit.url');
-      pr.Login = _.get(obj, 'head_commit.author.username');
-      if (pr.Login == undefined) {
-        pr.Login = _.get(obj, 'head_commit.author.name');
-      }
+      pr.Login = _.get(obj, 'sender.login');
+      // if (pr.Login == undefined) {
+      //   pr.Login = _.get(obj, 'head_commit.author.name');
+      // }
       pr.Title = _.get(obj, 'head_commit.message');
       pr.State = state;
       pr.Action = action;
